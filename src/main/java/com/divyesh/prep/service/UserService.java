@@ -5,6 +5,7 @@ import com.divyesh.prep.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -15,15 +16,20 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public int addUser(User user) {
-        return userRepository.addUser(user);
+    public List<User> getUsersByName(String name) {
+        return userRepository.findByName(name);
+    }
+
+    public User upsertUser(User user) {
+        return userRepository.save(user);
     }
 
     public User getUser(String uuid) {
-        return userRepository.getUser(uuid);
+        Optional<User> user = userRepository.findById(uuid);
+        return user.orElseThrow(() -> new RuntimeException("No user with uuid: " + uuid));
     }
 
     public List<User> getUsers() {
-        return userRepository.getUsers();
+        return userRepository.findAll();
     }
 }

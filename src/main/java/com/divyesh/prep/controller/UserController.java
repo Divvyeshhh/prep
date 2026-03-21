@@ -2,6 +2,7 @@ package com.divyesh.prep.controller;
 
 import com.divyesh.prep.model.User;
 import com.divyesh.prep.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +29,12 @@ public class UserController {
 
     @PostMapping
     public String addUser(@RequestBody User user) {
-        int rows = userService.addUser(user);
-        return (rows > 0) ? "User added" : "User add failed";
+        User userUpserted = userService.upsertUser(user);
+        return userUpserted.getUuid();
+    }
+
+    @GetMapping("/getUsersByName/{name}")
+    public ResponseEntity<List<User>> getUserByName(@PathVariable String name) {
+        return ResponseEntity.ok(userService.getUsersByName(name));
     }
 }
