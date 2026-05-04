@@ -3,6 +3,9 @@ name: Java CI
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,11 +20,16 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: 'maven'
 
       - name: Maven build
-        run: mvn clean install
+        run: mvn -B clean verify
 
-      - name: Run tests
-        run: mvn test
+      - name: Upload test reports (if failure)
+        if: failure()
+        uses: actions/upload-artifacts@v4
+        with:
+          name: test-reports
+          path: target/surefire-reports/
 
 
